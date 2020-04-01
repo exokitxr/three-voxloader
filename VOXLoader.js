@@ -2990,9 +2990,9 @@ const tesselate = (() => {
 
     for (let i = 0; i < numFaces; i++) {
       const face = faces[i];
-      const r = ((face >> 16) & 0xFF) / 0xFF;
-      const g = ((face >> 8) & 0xFF) / 0xFF;
-      const b = (face & 0xFF) / 0xFF;
+      const r = ((face >> 24) & 0xFF) / 0xFF;
+      const g = ((face >> 16) & 0xFF) / 0xFF;
+      const b = ((face >> 8) & 0xFF) / 0xFF;
       for (let j = 0; j < 6; j++) {
         result[i * 18 + j * 3 + 0] = r;
         result[i * 18 + j * 3 + 1] = g;
@@ -3089,7 +3089,7 @@ export class VOXLoader {
       z *= -1;
       x += dims[0];
       z += dims[2];
-      const c = (r << 16) | (g << 8) | b;
+      const c = (r << 24) | (g << 16) | (b << 8) | (y > 10 ? 64 : 255);
       voxMesh.set(c, x, y, z);
     }
     const mesh = voxMesh.generate();
