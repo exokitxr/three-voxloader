@@ -2799,7 +2799,7 @@ const tesselate = (() => {
             }
 
             let aMask, bMask;
-            if (a !== b || isTranslucent(a) || isTranslucent(b)) {
+            if (a !== b) {
               const aT = isTransparent(a);
               const bT = isTransparent(b);
 
