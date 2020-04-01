@@ -3037,6 +3037,15 @@ export class VOXMesh {
     });
     const mesh = (() => {
       const geometry = new THREE.BufferGeometry();
+      const alphaTextureData = (() => {
+        const data = new Uint8Array(256);
+        for (let i = 0; i < 256; i++) {
+          data[i] = i;
+        }
+        return data;
+      })();
+      const alphaTexture = new THREE.DataTexture(alphaTextureData, 256, 1, THREE.LuminanceFormat, THREE.UnsignedByteType, THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter, 1);
+      alphaTexture.needsUpdate = true;
       const material = new THREE.MeshStandardMaterial({
         color: 0xFFFFFF,
         vertexColors: THREE.VertexColors,
@@ -3044,6 +3053,8 @@ export class VOXMesh {
         flatShading: true,
         // map: objectTexture,
         // side: THREE.DoubleSide,
+        alphaMap: alphaTexture,
+        transparent: true,
       });
       const mesh = new THREE.Mesh(geometry, material);
       mesh.frustumCulled = false;
