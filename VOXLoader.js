@@ -2710,7 +2710,7 @@ const tesselate = (() => {
   function tesselate(voxels, dims, {
     isTransparent,
     isTranslucent,
-    getFaceUvs
+    // getFaceUvs
   }) {
     const {
       vertices: verticesData,
@@ -2725,6 +2725,7 @@ const tesselate = (() => {
     // const uvs = getUvs(facesData, normals, {getFaceUvs});
     // const ssaos = getSsaos(verticesData, voxels);
     const colors = getColors(facesData);
+    const uvs = getUvs(facesData);
 
     return {
       positions,
@@ -2732,6 +2733,7 @@ const tesselate = (() => {
       // uvs,
       // ssaos,
       colors,
+      uvs,
     };
   }
 
@@ -3003,6 +3005,22 @@ const tesselate = (() => {
     return result;
   }
 
+  function getUvs(faces) {
+    const numFaces = faces.length;
+    const result = new Float32Array(numFaces * 12);
+
+    for (let i = 0; i < numFaces; i++) {
+      const face = faces[i];
+      const a = (face & 0xFF) / 0xFF;
+      for (let j = 0; j < 12; j++) {
+        result[i * 12 + j * 2 + 0] = a;
+        result[i * 12 + j * 2 + 1] = 0.5;
+      }
+    }
+
+    return result;
+  }
+
   return tesselate;
 })();
 
@@ -3023,17 +3041,20 @@ export class VOXMesh {
     const {
       positions,
       normals,
-      colors
+      colors,
+      uvs,
     } = tesselate(this.voxels, this.dims, {
-      isTransparent() {
-        return false;
+      isTransparent(c) {
+        const a = c & 0xFF;
+        return a < 255;
       },
-      isTranslucent() {
-        return false;
+      isTranslucent(c) {
+        const a = c & 0xFF;
+        return a < 255;
       },
-      getFaceUvs() {
+      /* getFaceUvs() {
         throw new Error('not implemented');
-      },
+      }, */
     });
     const mesh = (() => {
       const geometry = new THREE.BufferGeometry();
@@ -3061,6 +3082,7 @@ export class VOXMesh {
       return mesh;
     })();
     mesh.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    mesh.geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
     mesh.geometry.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
     mesh.geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     return mesh;
