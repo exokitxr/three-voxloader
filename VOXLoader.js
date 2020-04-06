@@ -3044,10 +3044,10 @@ export class VOXParser {
         colorIndex
       } = voxelsObject;
       const {r, g, b, a} = paletteObjects[colorIndex];
-      x *= -1;
+      // x *= -1;
       z *= -1;
-      x += this.dims[0];
-      z += this.dims[2];
+      x -= this.dims[0]*1.5;
+      // z -= this.dims[2];
       const c = (r << 24) | (g << 16) | (b << 8) | a;
       return [x, y, z, c];
     });
